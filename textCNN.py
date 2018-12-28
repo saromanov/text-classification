@@ -1,5 +1,6 @@
 from keras.layers.convolutional import Conv2D
-from keras.layers.core import Dropout, Reshape
+from keras.layers.core import Dropout, Reshape, Dense
+from keras.layers import Bidirectional
 
 def text_cnn(embedding_matrix):
     filter_sizes = [1,2,3,5]
@@ -24,4 +25,21 @@ def text_cnn(embedding_matrix):
     model = Model(inputs=inp, outputs=outp)
     model.compile(loss='binary_crossentropy', optimizer='adagrad', metrics=['accuracy'])
 
+    return model
+
+def text_lstm(embedding_matrix):
+    ''' text_lstm defines
+        LSTM model for texts
+    '''
+    inp = Input(shape=(maxlen,))
+    x = Embedding(max_features, embed_size, weights=[embedding_matrix])(inp)
+    x = Bidirectional(CuDNNLSTM(64, return_sequences=True))(x)
+    avg_pool = GlobalAveragePooling1D()(x)
+    max_pool = GlobalMaxPooling1D()(x)
+    conc = concatenate([avg_pool, max_pool])
+    conc = Dense(64, activation="relu")(conc)
+    conc = Dropout(0.1)(conc)
+    outp = Dense(1, activation="sigmoid")(conc)
+    model = Model(inputs=inp, outputs=outp)
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model

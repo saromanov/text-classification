@@ -1,6 +1,9 @@
 from keras.layers.convolutional import Conv2D
-from keras.layers.core import Dropout, Reshape, Dense
+from keras.layers.core import Dropout, Reshape
+from keras.layers import Input, Dense
 from keras.layers import Bidirectional
+from keras.pooling import GlobalAveragePooling1D, GlobalMaxPooling1D
+from keras.models import Model
 
 def text_cnn(embedding_matrix):
     filter_sizes = [1,2,3,5]
